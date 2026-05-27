@@ -1,0 +1,27 @@
+{"properties": [
+    {
+      "name": "entity.service-endpoint",
+      "type": "java.lang.String",
+      "description": "Service endpoint'"
+    },
+    {
+      "name": "entity.role",
+      "type": "java.lang.String",
+      "description": "Role of the entity"
+    },
+    {
+      "name": "entity.did",
+      "type": "java.lang.String",
+      "description": "Full DID of the entity"
+    },
+    {
+      "name": "entity.port",
+      "type": "java.lang.String",
+      "description": "Port of the entity controller UI"
+    },
+    {
+      "name": "entity.ip",
+      "type": "java.lang.String",
+      "description": "IP Address of the entity controller UI"
+    }
+  ]}

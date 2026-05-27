@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>customer</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <style>
+        .btn-light-blue {
+            background-color: #59bbdb;
+            /* Light blue background */
+            color: white;
+            /* White text */
+        }
+
+        #responseContainer,
+        #inquiryResponseContainer,
+        #consumeResponseContainer,
+        #testResponseContainer {
+            display: none;
+            /* Hide containers initially */
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            overflow: auto;
+            max-height: 400px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+
+        .json-key {
+            color: purple;
+        }
+
+        .json-value {
+            color: blue;
+        }
+
+        .json-string {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="didValue" th:data-did="${clientDid}" style="display:none;"></div>
+    <div class="container mt-4">
+        <button class="btn btn-light-blue" onclick="startAssociation()">Connect to AP</button>
+        <button class="btn btn-light-blue" onclick="inquireService()">Inquire Service</button>
+        <button class="btn btn-light-blue" onclick="consumeService()">Consume Service</button>
+        <button class="btn btn-light-blue" onclick="testService()">Test Service</button>
+        <pre id="responseContainer"></pre>
+        <pre id="inquiryResponseContainer" class="responseContainer"></pre>
+        <pre id="consumeResponseContainer" class="responseContainer"></pre>
+        <pre id="testResponseContainer" class="responseContainer"></pre>
+    </div>
+
+    <script>
+        function extractIpAddress(url) {
+            // Regular expression to match an IPv4 address
+            const regexPattern = /(\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b)/;
+            const matches = url.match(regexPattern);
+
+            return matches ? matches[0] : null;
+        }
+
+        let currentUrl = window.location.href;
+
+        let ip = extractIpAddress(currentUrl)
+
+        console.log("IP from URL is: ", ip);
+
+        function startAssociation() {
+            var didValue = document.getElementById('didValue').getAttribute('data-did');
+            fetch(`http://${ip}/send-attachment-customer`, {
+                method: 'POST', // Set the method to POST
+                headers: {
+                    'Content-Type': 'application/json' // Set the Content-Type header
+                },
+                body: JSON.stringify(
+                    {
+                        role: 'customer',
+                        did: didValue,
+                        pairId: Math.floor(Math.random() * 2 ** 32)
+                    }
+                )
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Response from backend was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Display the initial response
+                    const container = document.getElementById('responseContainer');
+                    container.style.display = 'block'; // Make the container visible
+                    if (typeof syntaxHighlight === "function") {
+                        container.innerHTML = syntaxHighlight(JSON.stringify(data, null, 4));
+                    } else {
+                        container.textContent = JSON.stringify(data, null, 4);
+                    }
+
+                    return fetch(`http://${ip}/process-response-customer`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Response from second request was not ok');
+                    }
+                    // Handle the second response here if needed
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Update the UI to show the error message
+                    const container = document.getElementById('responseContainer');
+                    container.style.display = 'block'; // Make the container visible even in case of error
+                    container.textContent = 'Error: ' + error.message;
+                });
+        }
+
+        function inquireService() {
+            fetch(`http://${ip}/service-inquiry`, {
+                method: 'GET', // Change the method to GET for retrieving data
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json(); // Parse the JSON in the response
+                })
+                .then(data => {
+                    // Display the response data
+                    const inquiryContainer = document.getElementById('inquiryResponseContainer');
+                    inquiryContainer.innerHTML = syntaxHighlight(JSON.stringify(data, null, 4)); // Use the syntaxHighlight function to format the JSON data
+                    inquiryContainer.style.display = 'block'; // Make the container visible after receiving the response
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const inquiryContainer = document.getElementById('inquiryResponseContainer');
+                    inquiryContainer.textContent = 'Failed to inquire services: ' + error.message; // Display the error message
+                    inquiryContainer.style.display = 'block'; // Make the container visible even in case of error
+                });
+        }
+
+        function consumeService() {
+            fetch(`http://${ip}/consume-service/1`, {
+                method: 'GET', // Specify the method as GET
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok for consuming service');
+                    }
+                    return response.text(); // Parse the JSON in the response
+                })
+                .then(data => {
+                    // Display the response data in consumeResponseContainer
+                    const consumeContainer = document.getElementById('consumeResponseContainer');
+                    consumeContainer.innerHTML = syntaxHighlight(JSON.stringify(data, null, 4));; // Format the JSON data
+                    consumeContainer.style.display = 'block'; // Make the container visible after receiving the response
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const consumeContainer = document.getElementById('consumeResponseContainer');
+                    consumeContainer.textContent = 'Failed to consume service: ' + error.message; // Display the error message
+                    consumeContainer.style.display = 'block'; // Make the container visible even in case of error
+                });
+        }
+
+        function testService() {
+            fetch(`http://${ip}/test-service-customer`, {
+                method: 'GET', // Specify the method as GET
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok for consuming service');
+                    }
+                    return "{ \"status\": \"Message sent\" }";
+                })
+                .then(message => {
+                    // Display the success message in consumeResponseContainer
+                    const testContainer = document.getElementById('testResponseContainer');
+                    testContainer.innerHTML = syntaxHighlight(message);; // Format the JSON data
+                    testContainer.style.display = 'block'; // Make the container visible after receiving the response
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const testContainer = document.getElementById('testResponseContainer');
+                    testContainer.textContent = 'Failed to consume service: ' + error.message; // Display the error message
+                    testContainer.style.display = 'block'; // Make the container visible even in case of error
+                });
+        }
+
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, function (match) {
+                let cls = 'json-value';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+    </script>
+</body>
+
+</html>

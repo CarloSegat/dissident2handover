@@ -1,0 +1,114 @@
+@import './base.css';
+/* @import 'vuetify/dist/vuetify.min.css'; */
+
+
+html {
+  overflow: visible !important;
+  /* otherwise sticy doesnt work */
+}
+
+a, a:link, a:visited, a:hover, a:active, a:focus {
+  color: inherit; /* Makes the link color the same as the surrounding text */
+  text-decoration: none; /* Removes underline from links */
+  background-color: transparent; /* Ensures no background color */
+  border: none; /* Removes any borders */
+  outline: none; /* Removes focus outline */
+  cursor: auto; /* Ensures cursor is default and not pointer */
+}
+
+#app {
+  margin: 0 auto;
+  padding: 0px;
+  font-weight: normal;
+}
+
+.collapsableSectionTitle {
+  font-size: var(--my-font-medium) !important;
+  font-weight: 500;
+  letter-spacing: 0.1rem;
+  /* text-shadow: -5px 5px 5px rgba(255, 255, 255, 1); */
+  /* text-shadow: -1px 1px 10px rgb(255, 255, 255); */
+  /* text-shadow: 3px -3px 6px rgb(255, 255, 255); */
+  color: var(--my-white) !important;
+}
+
+.my-shadow {
+  box-shadow: 0 20px 27px 0 rgba(0,0,0,.05) !important;
+}
+
+.my-table-row {
+  font-weight: 300 !important;
+}
+
+.v-expansion-panel-title--active {
+  opacity: 100% !important;
+}
+
+.v-expansion-panel-title--active::before {
+  opacity: 100% !important;
+}
+
+.swag {
+  background-color: var(--my-whiter);
+}
+
+.flex-hor {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  max-width: var(--max-width);
+  width: var(--max-width);
+  background: white;
+  padding: var(--padding-m);
+  border-radius: var(--my-border-radius);
+  margin-bottom: var(--padding-m);
+  align-items: flex-start;
+  height: fit-content;
+}
+
+.iconAndTetx {
+  display: flex;
+  flex-direction: row;
+  margin-left: 2rem;
+  gap: 0.25rem;
+}
+
+.line {
+  background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  background-color: transparent;
+  border-width: 0;
+  height: 1px;
+}
+
+.diagramHai {
+  width: 30rem;
+  height: 20rem;
+  margin-left: 1rem;
+  position: fixed;
+  /* top: (7 + 2)rem; */
+  bottom: 2rem;
+  right: 2rem;
+}
+
+@media (max-width: 1825px){
+  .diagramHai {
+    /* display: none; */
+    width: 25rem;
+    height: 17rem;
+  }
+}
+
+@media (max-width: 1700px){
+  .diagramHai {
+    display: none;
+  }
+}
+
+.containerDiagram {
+  display: flex;
+  flex-direction: row;
+}
+
+.messageText {
+  font-size: var(--my-font-big) !important;
+}

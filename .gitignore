@@ -1,0 +1,19 @@
+# Node / Vite
+**/node_modules/
+**/dist/
+**/.vite/
+
+# Java / Maven
+**/target/
+*.class
+
+# Python
+**/__pycache__/
+*.pyc
+*.pyo
+.venv/
+**/*.egg-info/
+
+# OS / editor
+.DS_Store
+*.log

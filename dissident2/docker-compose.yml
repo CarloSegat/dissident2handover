@@ -1,0 +1,203 @@
+# Local full-stack bring-up of the dissident2 MAIN BE (no k8s).
+# Service names match the hostnames hardcoded in the code/configs:
+#   http-logger-service, <entity>-agent-service, <entity>-service.
+# Ledger: public BCOVRIN test net (DIDs already anchored).
+# Resolver: snet_resolver plugin (pip-installed into the resolver agents at boot);
+#   it routes did:sov resolution to each entity's own controller webhook.
+#
+# NOTE: only the nginx api-gateway publishes a host port (48080). Agent/controller
+# ports stay internal to the compose network (no host clashes, e.g. macOS AirPlay :7000).
+#
+# Bring up:  docker compose up -d --build
+# UI points at: ip=localhost:48080 (nginx), ui_backend=localhost:48024 (separate ui-backend repo)
+
+x-acapy-image: &acapy_image bcgovimages/aries-cloudagent:py3.9-indy-1.16.0_0.11.3
+
+services:
+  # ----------------------------- AGENTS -----------------------------
+  customer-agent-service:
+    image: *acapy_image
+    container_name: customer-agent-service
+    environment:
+      ACAPY_ENDPOINT: "http://customer-agent-service:5100"
+      CUSTOM_RESOLVEMENT_CACHE_URL: "http://customer-service:5555/webhook/topic/did_resolution/"
+    volumes:
+      - ../custom-did-resolution-submodule:/resolver:ro
+    entrypoint: ["/bin/bash","-c"]
+    command:
+      - >
+        pip install --no-deps /resolver &&
+        aca-py start
+        --plugin snet_resolver
+        --admin '0.0.0.0' 5000 --admin-insecure-mode
+        --inbound-transport http '0.0.0.0' 5100 --outbound-transport http
+        --endpoint http://customer-agent-service:5100
+        --genesis-url http://test.bcovrin.vonx.io/genesis
+        --wallet-type askar --wallet-name tub-wallet --wallet-key tub-key --auto-provision
+        --seed Dissident2_Client_---_0000000000
+        --public-invites --requests-through-public-did --auto-ping-connection
+        --auto-respond-credential-proposal --auto-respond-credential-offer
+        --auto-respond-credential-request --auto-respond-presentation-proposal
+        --auto-respond-presentation-request --auto-store-credential --auto-verify-presentation
+        --preserve-exchange-records --log-level INFO
+        --webhook-url http://customer-service:5555/webhook
+
+  provider-agent-service:
+    image: *acapy_image
+    container_name: provider-agent-service
+    environment:
+      ACAPY_ENDPOINT: "http://provider-agent-service:6100"
+      CUSTOM_RESOLVEMENT_CACHE_URL: "http://provider-service:6666/webhook/topic/did_resolution/"
+    volumes:
+      - ../custom-did-resolution-submodule:/resolver:ro
+    entrypoint: ["/bin/bash","-c"]
+    command:
+      - >
+        pip install --no-deps /resolver &&
+        aca-py start
+        --plugin snet_resolver
+        --admin '0.0.0.0' 6000 --admin-insecure-mode
+        --inbound-transport http '0.0.0.0' 6100 --outbound-transport http
+        --endpoint http://provider-agent-service:6100
+        --genesis-url http://test.bcovrin.vonx.io/genesis
+        --wallet-type askar --wallet-name tub-wallet --wallet-key tub-key --auto-provision
+        --seed Dissident2_Provider_---_00000000
+        --public-invites --requests-through-public-did --auto-ping-connection
+        --auto-respond-credential-proposal --auto-respond-credential-offer
+        --auto-respond-credential-request --auto-respond-presentation-proposal
+        --auto-respond-presentation-request --auto-store-credential --auto-verify-presentation
+        --preserve-exchange-records --log-level INFO
+        --webhook-url http://provider-service:6666/webhook
+
+  accesspoint-agent-service:
+    image: *acapy_image
+    container_name: accesspoint-agent-service
+    environment:
+      ACAPY_ENDPOINT: "http://accesspoint-agent-service:7100"
+      CUSTOM_RESOLVEMENT_CACHE_URL: "http://accesspoint-service:7777/webhook/topic/did_resolution/"
+    volumes:
+      - ../custom-did-resolution-submodule:/resolver:ro
+    entrypoint: ["/bin/bash","-c"]
+    command:
+      - >
+        pip install --no-deps /resolver &&
+        aca-py start
+        --plugin snet_resolver
+        --admin '0.0.0.0' 7000 --admin-insecure-mode
+        --inbound-transport http '0.0.0.0' 7100 --outbound-transport http
+        --endpoint http://accesspoint-agent-service:7100
+        --genesis-url http://test.bcovrin.vonx.io/genesis
+        --wallet-type askar --wallet-name tub-wallet --wallet-key tub-key --auto-provision
+        --seed Dissident2_Ap_---_00000000000000
+        --public-invites --requests-through-public-did --auto-ping-connection
+        --auto-respond-credential-proposal --auto-respond-credential-offer
+        --auto-respond-credential-request --auto-respond-presentation-proposal
+        --auto-respond-presentation-request --auto-store-credential --auto-verify-presentation
+        --preserve-exchange-records --log-level INFO
+        --webhook-url http://accesspoint-service:7777/webhook
+
+  dlg-agent-service:
+    image: bcgovimages/aries-cloudagent:py3.9-indy-1.16.0_0.10.4
+    container_name: dlg-agent-service
+    environment:
+      ACAPY_ENDPOINT: "http://dlg-agent-service:8100"
+    entrypoint: ["/bin/bash","-c"]
+    command:
+      - >
+        aca-py start
+        --admin '0.0.0.0' 8000 --admin-insecure-mode
+        --inbound-transport http '0.0.0.0' 8100 --outbound-transport http
+        --endpoint http://dlg-agent-service:8100
+        --genesis-url http://test.bcovrin.vonx.io/genesis
+        --wallet-type askar --wallet-name tub-wallet --wallet-key tub-key --auto-provision
+        --seed Dissident2_Dlg_---_0000000000000
+        --public-invites --requests-through-public-did --auto-ping-connection
+        --auto-respond-credential-proposal --auto-respond-credential-offer
+        --auto-respond-credential-request --auto-respond-presentation-proposal
+        --auto-respond-presentation-request --auto-store-credential --auto-verify-presentation
+        --preserve-exchange-records --log-level INFO
+        --webhook-url http://dlg-service:8888/webhook
+
+  issuer-agent-service:
+    image: bcgovimages/aries-cloudagent:py3.9-indy-1.16.0_0.10.4
+    container_name: issuer-agent-service
+    environment:
+      ACAPY_ENDPOINT: "http://issuer-agent-service:9100"
+    entrypoint: ["/bin/bash","-c"]
+    command:
+      - >
+        aca-py start
+        --admin '0.0.0.0' 9000 --admin-insecure-mode
+        --inbound-transport http '0.0.0.0' 9100 --outbound-transport http
+        --endpoint http://issuer-agent-service:9100
+        --genesis-url http://test.bcovrin.vonx.io/genesis
+        --wallet-type askar --wallet-name tub-wallet --wallet-key tub-key --auto-provision
+        --seed Dissident2_Issuer_---_0000000000
+        --public-invites --requests-through-public-did --auto-ping-connection
+        --auto-respond-credential-proposal --auto-respond-credential-offer
+        --auto-respond-credential-request --auto-respond-presentation-proposal
+        --auto-respond-presentation-request --auto-store-credential --auto-verify-presentation
+        --preserve-exchange-records --log-level INFO
+        --webhook-url http://issuer-service:9999/webhook
+
+  # --------------------------- CONTROLLERS ---------------------------
+  customer-service:
+    build: ./customer
+    container_name: customer-service
+    restart: on-failure
+    environment: { ARIES_CLIENT_IP: customer-agent-service, ARIES_CLIENT_PORT: "5000" }
+    entrypoint: ["/bin/sh","-c","until curl -s -o /dev/null -L http://customer-agent-service:5000; do echo wait-agent; sleep 2; done; exec java -jar /app.jar"]
+    depends_on: [customer-agent-service, http-logger-service]
+
+  provider-service:
+    build: ./provider
+    container_name: provider-service
+    restart: on-failure
+    environment: { ARIES_CLIENT_IP: provider-agent-service, ARIES_CLIENT_PORT: "6000" }
+    entrypoint: ["/bin/sh","-c","until curl -s -o /dev/null -L http://provider-agent-service:6000; do echo wait-agent; sleep 2; done; exec java -jar /app.jar"]
+    depends_on: [provider-agent-service, http-logger-service]
+
+  accesspoint-service:
+    build: ./accesspoint
+    container_name: accesspoint-service
+    restart: on-failure
+    environment: { ARIES_CLIENT_IP: accesspoint-agent-service, ARIES_CLIENT_PORT: "7000" }
+    entrypoint: ["/bin/sh","-c","until curl -s -o /dev/null -L http://accesspoint-agent-service:7000; do echo wait-agent; sleep 2; done; exec java -jar /app.jar"]
+    depends_on: [accesspoint-agent-service, http-logger-service, issuer-service]
+
+  dlg-service:
+    build: ./dlg
+    container_name: dlg-service
+    restart: on-failure
+    environment: { ARIES_CLIENT_IP: dlg-agent-service, ARIES_CLIENT_PORT: "8000" }
+    entrypoint: ["/bin/sh","-c","until curl -s -o /dev/null -L http://dlg-agent-service:8000; do echo wait-agent; sleep 2; done; exec java -jar /app.jar"]
+    depends_on: [dlg-agent-service, http-logger-service]
+
+  issuer-service:
+    build: ./issuer
+    container_name: issuer-service
+    restart: on-failure
+    # fresh schemaId -> issuer creates a new schema + cred-def in the clean wallet
+    # (avoids "on ledger but not in wallet" vs the VM's 30.12). README's documented trigger.
+    environment:
+      ARIES_CLIENT_IP: issuer-agent-service
+      ARIES_CLIENT_PORT: "9000"
+      ENTITY_SCHEMAID: "WQtxQy4ERo6vgxkM1o5BPh:2:dissident2:2026.527"
+    entrypoint: ["/bin/sh","-c","until curl -s -o /dev/null -L http://issuer-agent-service:9000; do echo wait-agent; sleep 2; done; exec java -jar /app.jar"]
+    depends_on: [issuer-agent-service, http-logger-service]
+
+  # ---------------------------- HTTP LOGGER --------------------------
+  http-logger-service:
+    build: ./http-logger
+    container_name: http-logger-service
+    # forwards events to the ui-backend running on the host (port 48024)
+    extra_hosts: ["host.docker.internal:host-gateway"]
+
+  # ------------------------- NGINX (api-ingress) ---------------------
+  api-gateway:
+    image: nginx:alpine
+    container_name: api-gateway
+    volumes:
+      - ./compose-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on: [customer-service, provider-service]
+    ports: ["48080:80"]

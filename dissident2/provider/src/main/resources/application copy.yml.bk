@@ -1,0 +1,129 @@
+spring:
+  profiles:
+    active: provider
+entity:
+  role: "provider"
+  ip: localhost
+  port: 6000
+  did: "did:sov:KssDMmREv3migEZNLMThjc"
+  serviceEndpoint: "http://provider-agent-service:6100"
+dlg:
+  did: "did:sov:8eQhKkZMjKXbLwaBNEKRu3"
+  didDocument: >
+    {
+      "@context": [
+        "https://www.w3.org/ns/did/v1"
+      ],
+      "id": "did:sov:8eQhKkZMjKXbLwaBNEKRu3",
+      "verificationMethod": [
+        {
+          "id": "did:sov:8eQhKkZMjKXbLwaBNEKRu3#key-1",
+          "type": "Ed25519VerificationKey2018",
+          "controller": "did:sov:8eQhKkZMjKXbLwaBNEKRu3",
+          "publicKeyBase58": "5Ag23enN3zFtvapPKHiEcE9ysi36V4z6GBkKw4w3BKGW"
+        }
+      ],
+      "authentication": [
+        "did:sov:8eQhKkZMjKXbLwaBNEKRu3#key-1"
+      ],
+      "assertionMethod": [
+        "did:sov:8eQhKkZMjKXbLwaBNEKRu3#key-1"
+      ],
+      "service": [
+        {
+          "id": "did:sov:8eQhKkZMjKXbLwaBNEKRu3#did-communication",
+          "type": "did-communication",
+          "serviceEndpoint": "http://dlg-agent-service:8100",
+          "recipient_keys": [
+            "did:sov:8eQhKkZMjKXbLwaBNEKRu3#key-1"
+          ],
+          "routing_keys": [],
+          "priority": 1,
+          "accept": [
+            "didcomm/aip2;env=rfc19"
+          ]
+        }
+      ]
+    }
+issuer:
+  did: "did:sov:WQtxQy4ERo6vgxkM1o5BPh"
+  didDocument: >
+    {
+      "@context": [
+        "https://www.w3.org/ns/did/v1"
+      ],
+      "id": "did:sov:WQtxQy4ERo6vgxkM1o5BPh",
+      "verificationMethod": [
+        {
+          "id": "did:sov:WQtxQy4ERo6vgxkM1o5BPh#key-1",
+          "type": "Ed25519VerificationKey2018",
+          "controller": "did:sov:WQtxQy4ERo6vgxkM1o5BPh",
+          "publicKeyBase58": "H2mjGFtNikTXQSVysrcjYSt5iDJoRp4jFmNSY91UJMTy"
+        }
+      ],
+      "authentication": [
+        "did:sov:WQtxQy4ERo6vgxkM1o5BPh#key-1"
+      ],
+      "assertionMethod": [
+        "did:sov:WQtxQy4ERo6vgxkM1o5BPh#key-1"
+      ],
+      "service": [
+        {
+          "id": "did:sov:WQtxQy4ERo6vgxkM1o5BPh#did-communication",
+          "type": "did-communication",
+          "serviceEndpoint": "http://issuer-agent-service:9100",
+          "priority": 1,
+          "accept": [
+            "didcomm/aip2;env=rfc19"
+          ],
+          "recipient_keys": [
+            "did:sov:WQtxQy4ERo6vgxkM1o5BPh#key-1"
+          ],
+          "routing_keys": []
+        }
+      ]
+    }
+issuer:
+  did: "did:sov:JkLh77QhkXtak11BxSbMzL"
+  didDocument: >
+    {
+      "@context": [
+        "https://www.w3.org/ns/did/v1"
+      ],
+      "id": "did:sov:JkLh77QhkXtak11BxSbMzL",
+      "verificationMethod": [
+        {
+          "id": "did:sov:JkLh77QhkXtak11BxSbMzL#key-1",
+          "type": "Ed25519VerificationKey2018",
+          "controller": "did:sov:JkLh77QhkXtak11BxSbMzL",
+          "publicKeyBase58": "Ag2TARknRs78o4zgH4s4tdan4hXzjhFPXMCj6dz4REat"
+        }
+      ],
+      "authentication": [
+        "did:sov:JkLh77QhkXtak11BxSbMzL#key-1"
+      ],
+      "assertionMethod": [
+        "did:sov:JkLh77QhkXtak11BxSbMzL#key-1"
+      ],
+      "service": [
+        {
+          "id": "did:sov:JkLh77QhkXtak11BxSbMzL#did-communication",
+          "type": "did-communication",
+          "serviceEndpoint": "http://issuer2-agent-service:9100",
+          "priority": 1,
+          "accept": [
+            "didcomm/aip2;env=rfc19"
+          ],
+          "recipient_keys": [
+            "did:sov:JkLh77QhkXtak11BxSbMzL#key-1"
+          ],
+          "routing_keys": []
+        }
+      ]
+    }
+server:
+  port: 6666
+aries:
+  client:
+    ip: localhost
+    port: 6000

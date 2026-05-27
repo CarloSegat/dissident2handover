@@ -1,0 +1,98 @@
+/* color palette from <https://github.com/vuejs/theme> */
+:root {
+  --vt-c-white: #ffffff;
+  --vt-c-white-soft: #ffffff;
+  --vt-c-white-mute: #f2f2f2;
+
+  --vt-c-black: #000000;
+  --my-red: #9fd1ff;
+
+  --vt-c-indigo: #2c3e50;
+
+  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
+  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
+  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
+  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
+
+  --vt-c-text-light-1: var(--vt-c-indigo);
+  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
+  --vt-c-text-dark-1: var(--vt-c-white);
+  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+}
+
+/* semantic color variables for this project */
+:root {
+  --color-background: var(--vt-c-white);
+  --my-white: var(--vt-c-white-soft);
+  --my-whiter: var(--vt-c-white);
+  --color-background-mute: var(--vt-c-white-mute);
+
+  --color-border: var(--vt-c-divider-light-2);
+  --color-border-hover: var(--vt-c-divider-light-1);
+
+  --color-heading: var(--vt-c-text-light-1);
+  --color-text: var(--vt-c-text-light-1);
+
+  --section-gap: 160px;
+  --my-border-radius: 1rem;
+  --my-font-small: 12pt;
+  --my-font-medium: 14pt;
+  --my-font-big: 18pt;
+  --my-font-big2: 24pt;
+  --c-0: #e63946;
+  --c-1: #457b9d;
+  --c-2: #f1faee;
+  --c-3: #a8dadc;
+  --c-4: #1d3557;
+
+  --c-home: var(--c-4);
+  --c-dlg: var(--c-1);
+  --c-ap: var(--c-1);
+  --c-client: var(--c-3);
+}
+
+:root {
+  --padding-l: 1.5rem;
+  --padding-s: 0.5rem;
+  --padding-m: 1rem;
+  --max-width: 65rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--vt-c-black);
+    --my-white: #F7F8FA;
+    --color-background-mute: var(--my-red);
+
+    --color-border: var(--vt-c-divider-dark-2);
+    --color-border-hover: var(--vt-c-divider-dark-1);
+    --color-heading: var(--vt-c-text-dark-1);
+    --color-text: var(--vt-c-text-dark-2);
+  }
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background);
+  transition:
+    color 0.5s,
+    background-color 0.5s;
+  line-height: 1.6;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
