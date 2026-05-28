@@ -1,7 +1,8 @@
 # Local full-stack bring-up of the dissident2 MAIN BE (no k8s).
 # Service names match the hostnames hardcoded in the code/configs:
 #   http-logger-service, <entity>-agent-service, <entity>-service.
-# Ledger: public BCOVRIN test net (DIDs already anchored).
+# Ledger: LOCAL von-network on this host (genesis http://172.17.0.1:9000/genesis).
+#   The 5 seed-DIDs were anchored there via von's /register (ENDORSER role).
 # Resolver: snet_resolver plugin (pip-installed into the resolver agents at boot);
 #   it routes did:sov resolution to each entity's own controller webhook.
 #
@@ -32,7 +33,7 @@ services:
         --admin '0.0.0.0' 5000 --admin-insecure-mode
         --inbound-transport http '0.0.0.0' 5100 --outbound-transport http
         --endpoint http://customer-agent-service:5100
-        --genesis-url http://test.bcovrin.vonx.io/genesis
+        --genesis-url http://172.17.0.1:9000/genesis
         --wallet-type askar --wallet-name tub-wallet --wallet-key tub-key --auto-provision
         --seed Dissident2_Client_---_0000000000
         --public-invites --requests-through-public-did --auto-ping-connection
@@ -59,7 +60,7 @@ services:
         --admin '0.0.0.0' 6000 --admin-insecure-mode
         --inbound-transport http '0.0.0.0' 6100 --outbound-transport http
         --endpoint http://provider-agent-service:6100
-        --genesis-url http://test.bcovrin.vonx.io/genesis
+        --genesis-url http://172.17.0.1:9000/genesis
         --wallet-type askar --wallet-name tub-wallet --wallet-key tub-key --auto-provision
         --seed Dissident2_Provider_---_00000000
         --public-invites --requests-through-public-did --auto-ping-connection
@@ -86,7 +87,7 @@ services:
         --admin '0.0.0.0' 7000 --admin-insecure-mode
         --inbound-transport http '0.0.0.0' 7100 --outbound-transport http
         --endpoint http://accesspoint-agent-service:7100
-        --genesis-url http://test.bcovrin.vonx.io/genesis
+        --genesis-url http://172.17.0.1:9000/genesis
         --wallet-type askar --wallet-name tub-wallet --wallet-key tub-key --auto-provision
         --seed Dissident2_Ap_---_00000000000000
         --public-invites --requests-through-public-did --auto-ping-connection
@@ -108,7 +109,7 @@ services:
         --admin '0.0.0.0' 8000 --admin-insecure-mode
         --inbound-transport http '0.0.0.0' 8100 --outbound-transport http
         --endpoint http://dlg-agent-service:8100
-        --genesis-url http://test.bcovrin.vonx.io/genesis
+        --genesis-url http://172.17.0.1:9000/genesis
         --wallet-type askar --wallet-name tub-wallet --wallet-key tub-key --auto-provision
         --seed Dissident2_Dlg_---_0000000000000
         --public-invites --requests-through-public-did --auto-ping-connection
@@ -130,7 +131,7 @@ services:
         --admin '0.0.0.0' 9000 --admin-insecure-mode
         --inbound-transport http '0.0.0.0' 9100 --outbound-transport http
         --endpoint http://issuer-agent-service:9100
-        --genesis-url http://test.bcovrin.vonx.io/genesis
+        --genesis-url http://172.17.0.1:9000/genesis
         --wallet-type askar --wallet-name tub-wallet --wallet-key tub-key --auto-provision
         --seed Dissident2_Issuer_---_0000000000
         --public-invites --requests-through-public-did --auto-ping-connection
@@ -182,7 +183,7 @@ services:
     environment:
       ARIES_CLIENT_IP: issuer-agent-service
       ARIES_CLIENT_PORT: "9000"
-      ENTITY_SCHEMAID: "WQtxQy4ERo6vgxkM1o5BPh:2:dissident2:2026.527"
+      ENTITY_SCHEMAID: "WQtxQy4ERo6vgxkM1o5BPh:2:dissident2:2026.528.164505"
     entrypoint: ["/bin/sh","-c","until curl -s -o /dev/null -L http://issuer-agent-service:9000; do echo wait-agent; sleep 2; done; exec java -jar /app.jar"]
     depends_on: [issuer-agent-service, http-logger-service]
 

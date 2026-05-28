@@ -7,7 +7,8 @@ entity:
   port: 9000
   did: "did:sov:WQtxQy4ERo6vgxkM1o5BPh"
   serviceEndpoint: "http://issuer-agent-service:8100"
-  schemaId: "WQtxQy4ERo6vgxkM1o5BPh:2:dissident2:30.12"
+  # schemaId is injected at runtime from the ENTITY_SCHEMAID env in docker-compose.yml
+  # (bumped each fresh run by fresh-run.sh — see the top-level README).
 server:
   port: 9999
 dlg:

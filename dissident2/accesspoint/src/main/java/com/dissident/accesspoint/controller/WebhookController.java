@@ -154,7 +154,13 @@ public class WebhookController extends WebhookControllerBase {
             if ("request".equals(state)) {
                 return this.respondToDidExchangeRequest("7000", eventData);
             } else {
-                if ("completed".equals(state)) {
+                if ("completed".equals(state) || "active".equals(state)) {
+                    // ACA-Py 0.11.x (the resolver agents) reports the terminal didexchange
+                    // state as "active", while 0.10.x (dlg/issuer) reports "completed".
+                    // Accept either; the existingRecord guard below makes it idempotent if
+                    // both fire. (Previously only "completed" was handled, so the DLG/issuer
+                    // connection records were never created and waitForActiveDlgConnection()
+                    // blocked forever -> the first "connect" click hung.)
                     // It is important to ignore the "done" state or this will be called twice
                     String theirDid = (String) eventData.get("their_public_did");
                     if (theirDid == null) {
