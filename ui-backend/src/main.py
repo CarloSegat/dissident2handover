@@ -1,11 +1,7 @@
-import json
-import os
 from fastapi import (
     FastAPI,
-    HTTPException,
     Response,
 )
-from fastapi.responses import FileResponse
 
 from src.db import DB
 from src.event_type import Event
@@ -14,11 +10,6 @@ app = FastAPI()
 db = DB()
 
 db.connect()
-
-def there_are_two_presentation_responses_as_last(lines):
-    # lines = [l for l in lines if l != "end" and "rect" not in l and "participant" not in l and "sequenceDiagram" not in l]
-    a = [a for a in lines if "Provide Identity Information" in a]
-    return len(a) % 2 == 0 and len(a) != 0
 
 def there_are_6_issuance_messages(lines):
     lines = [l for l in lines if l != "end" and "rect" not in l and "participant" not in l and "sequenceDiagram" not in l] 
@@ -34,11 +25,7 @@ def hello_world():
 
 @app.get("/services")
 def get_services(response: Response):
-    '''
-    the services that have been registered so far
-    Notice that the BE service inquiry should not be used by the UI
-    otherwise it causes a message to be added to the seq diagram
-    '''
+    """Registered services. Do not use the BE service-inquiry path from the UI — it adds a seq-diagram message."""
     response.headers["Access-Control-Allow-Origin"] = "http://localhost:48173"
     events = [e['content'] for e in db.get_events() if e['sub_group'] == "ServiceRegistrationRequestSend"] 
     return events
@@ -121,8 +108,6 @@ def get_mermaid(response: Response):
         "ServiceUsageResponseSend": "Grant Service Usage",
     }
 
-    # actor_string = "    actor {{actor}}"
-
     def format_sequence_diagram(events):
         NOT_CONNECTED = "  Note over CUSTOMER,DLG: NEITHER \"CUSTOMER\" NOR \"QR GENERATOR\" ARE CONNECTED\n"
         DID_KNOWN_STATUS_BOX = "  Note over CUSTOMER,DLG: DID OF {} BECOMES KNOWN<br/>BUT {} IS NOT AUTHENTICATED\n"
@@ -164,14 +149,14 @@ def get_mermaid(response: Response):
             diagram_lines.append(line)
             diagram_lines.append("end")
             
-            # activation for verificaiton
+            # activation arrow for the verification confirmation
             s = ""
             if message_type == message_replacements["PresentationResponseSend"]:
                 s = "  activate {0}\n{0}-->>{1}: confirm authentication\ndeactivate {0}\n"
                 s = s.format(trg, src)
                 diagram_lines.append(s)
             
-            # 3 status boxes
+            # status-box notes: not-connected / DID-known / authenticated
             if there_are_6_issuance_messages(diagram_lines):
                 diagram_lines.append(NOT_CONNECTED)
             
@@ -200,14 +185,14 @@ def get_mermaid(response: Response):
     
     def get_message_color(event_type):
         ok = {
-            "connection": "rect rgb(225, 255, 255)", # 011
+            "connection": "rect rgb(225, 255, 255)",
             "attachment": "rect rgb(255, 225, 255)",
             "didresolution": "rect rgb(255, 255, 225)",
-            "issuance": "rect rgb(225, 225, 255)", # 001
-            "presentation": "rect rgb(255, 225, 225)", # 100
-            "serviceregistration": "rect rgb(225, 255, 225)", # 010
-            "servicediscovery": "rect rgb(225, 225, 225)", 
-            "serviceusage": "rect rgb(225, 255, 255)", 
+            "issuance": "rect rgb(225, 225, 255)",
+            "presentation": "rect rgb(255, 225, 225)",
+            "serviceregistration": "rect rgb(225, 255, 225)",
+            "servicediscovery": "rect rgb(225, 225, 225)",
+            "serviceusage": "rect rgb(225, 255, 255)",
         }
         
         for k in ok.keys():

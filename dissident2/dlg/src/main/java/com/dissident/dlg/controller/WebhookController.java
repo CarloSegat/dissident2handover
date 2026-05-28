@@ -70,7 +70,7 @@ public class WebhookController extends WebhookControllerBase {
         );
 
         try {
-            // wea ssume that a basicMessage always and only implies a didResolution
+            // we assume that a basicMessage always and only implies a didResolution
 
             String didToResolve = myMap.get("did_to_resolve");
             String resolverResponse = resolveDidDocument(didToResolve);

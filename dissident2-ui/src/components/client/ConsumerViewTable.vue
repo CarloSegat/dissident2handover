@@ -4,7 +4,7 @@
 
     <v-snackbar v-model="hasFinishedConsumption" location="top" vertical timeout="99999" style="font-size: var(--my-font-small);">
         <div class="qr_container">
-            <div>Service consumed succesfully, find the returned QR code below
+            <div>Service consumed successfully, find the returned QR code below
             </div>
             <!-- Hannover messe hot-fix -->
             <!-- <img :src="this.qrCode.replace('&amp;', '&')"> -->

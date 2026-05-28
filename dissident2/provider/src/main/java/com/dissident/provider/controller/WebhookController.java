@@ -14,7 +14,6 @@ import com.dissident.common.service.MessagingService;
 import com.dissident.common.service.VerificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

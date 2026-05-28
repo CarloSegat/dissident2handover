@@ -1,15 +1,15 @@
 [tool.poetry]
 name = "snet_resolver"
 version = "0.1.0"
-description = "ACA-Py DID Resolver for Github DID Method"
-authors = ["Daniel Bluhm <dbluhm@pm.me>"]
+description = "ACA-Py DID resolver routing did:sov to the dissident2 webhook cache"
+authors = ["dissident2 maintainers"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = "^3.6.9"
 aiohttp = "^3.6.2"
-aries-cloudagent = {git = "https://github.com/hyperledger/aries-cloudagent-python", rev = "66c9c02"}
-pydid = "^0.4.0"
+# aries-cloudagent is provided by the host ACA-Py image at runtime
+# (docker-compose installs the plugin with `pip install --no-deps`).
 
 [build-system]
 requires = ["setuptools", "poetry-core>=1.0.0"]

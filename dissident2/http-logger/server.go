@@ -10,10 +10,9 @@ import (
 
 // Define a struct to parse the incoming JSON data
 type MessageStruct struct {
-	SrcEntity string 
-    TrgEntity string 
-    // PairID    string 
-    Timestamp int64  
+	SrcEntity string
+    TrgEntity string
+    Timestamp int64
     Content   interface{} 
     Group  string 
     SubGroup  string 
@@ -72,7 +71,6 @@ func sendToUIBackend(data MessageStruct) {
 }
 
 func main() {
-	// localhost:8887/http-logger/ciao
 	http.HandleFunc("/http-logger", httpLoggerHandler)
 	log.Println("Starting server on :8887")
 	log.Fatal(http.ListenAndServe(":8887", nil))

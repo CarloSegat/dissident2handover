@@ -55,10 +55,10 @@ public class SchemaInitializationRunner implements ApplicationRunner {
                 } else {
                     System.out.println("Credential Definition for Schema with ID " + schemaId + " does not exist.");
                     throw new Exception(
-                        "You need to increase the versoin number of the schema ID, delete " + 
-                        "the persisted wallets and run everythibg again. Unfortunately, if the " +
-                        "credentail definiton cannot be found in the wallet but it exists on the ledge, " + 
-                        "then the credential definiton must be recreated. " +
+                        "You need to increase the version number of the schema ID, delete " +
+                        "the persisted wallets and run everything again. If the credential " +
+                        "definition cannot be found in the wallet but exists on the ledger, " +
+                        "it must be recreated. " +
                         "See https://github.com/hyperledger/aries-cloudagent-python/issues/506"
                     );
                 }

@@ -77,7 +77,6 @@ export default {
   },
   components: {MyIcon},
   created() {
-    // TODO move in refresh
     // watch the params of the route to fetch the data again
     this.$watch(
       () => this.$route.params,

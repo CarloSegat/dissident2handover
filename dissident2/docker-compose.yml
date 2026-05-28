@@ -183,7 +183,7 @@ services:
     environment:
       ARIES_CLIENT_IP: issuer-agent-service
       ARIES_CLIENT_PORT: "9000"
-      ENTITY_SCHEMAID: "WQtxQy4ERo6vgxkM1o5BPh:2:dissident2:2026.528.164505"
+      ENTITY_SCHEMAID: "WQtxQy4ERo6vgxkM1o5BPh:2:dissident2:2026.528.181019"
     entrypoint: ["/bin/sh","-c","until curl -s -o /dev/null -L http://issuer-agent-service:9000; do echo wait-agent; sleep 2; done; exec java -jar /app.jar"]
     depends_on: [issuer-agent-service, http-logger-service]
 

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from pymongo import MongoClient
 
 from src.event_type import Event
@@ -48,16 +46,6 @@ class DB():
             if "Received" in send['sub_group']:
                 continue
 
-            matches = [
-                received for received in events
-                if received['sub_group'][0:-8] == send['sub_group'][0:-4] 
-                and received['src_entity'] == send['src_entity']
-                and received['trg_entity'] == send['trg_entity']
-            ]
-
-            # if len(matches) != 1:
-                # print("!! >> !! >> problem ", send, matches)
-
             aggregated = {
                 "type": send['sub_group'],
                 "src": send['src_entity'],
@@ -67,7 +55,8 @@ class DB():
 
             result.append(aggregated)
             
-        # dirty hack: in the seq diagram there is one more service granted message: remove it manually 
+        # ServiceUsageResponseSend gets logged twice per grant (mutual side effect);
+        # drop the second so the seq diagram shows one "Grant Service Usage" message.
         service_use_reqs = [a for a in result if a['type'] == "ServiceUsageResponseSend"]
         if len(service_use_reqs) >= 2:
             result.remove(service_use_reqs[1])
@@ -131,15 +120,7 @@ class DB():
         return events
 
     def _filter_mutual_events(self):
-        
-        """
-        Because connectionSetup with didExchange is mutual behind the scenes,
-        it looks like the event-logs have wrong messages (e.g. the AP receiving a 
-        connectionSetup request form the DLG, although it's the AP that initiates the
-        connection)
-
-        This method removes those events
-        """
+        """Drop didExchange shadow events (e.g. AP seeing a request from DLG when AP initiated) so the seq diagram is one-sided."""
 
         req_sent_events = self._get_request_send_events()
 

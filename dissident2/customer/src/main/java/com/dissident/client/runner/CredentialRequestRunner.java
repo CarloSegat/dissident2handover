@@ -1,7 +1,6 @@
 package com.dissident.client.runner;
 
 import org.hyperledger.aries.AriesClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dissident.common.service.ConnectionManagerService;
